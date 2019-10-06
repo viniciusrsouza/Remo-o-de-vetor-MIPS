@@ -4,6 +4,7 @@ msg_erro_tamanho: 	.asciiz "Tamanho inválido.\n"
 msg_receber_inteiro: 	.asciiz "Digite um número inteiro.\n"
 msg_receber_excluir:	.asciiz "Digite o valor a ser removido.\n"
 msg_n_encontrado:	.asciiz "O número selecionado não existe no vetor. \n"
+separador:		.asciiz ", "
 
 #  Registradores
 #  $s0 = tamanho do vetor
@@ -98,7 +99,7 @@ remover_elemento:
 	      end_remover:
 	      lw $t0, 0($sp)	     # pop stack para $t0
 	      addi $sp, $sp, 4
-	      
+	      subi $s0, $s0, 1
 	    else:
 	    addi $t0, $t0, 4
 	    addi $t5, $t5, 1
@@ -112,7 +113,19 @@ remover_elemento:
 	la $a0, msg_n_encontrado
 	syscall
 	else_not_found:
-	
+	add $t0, $zero, $zero
+	loop_print:
+	  beq $t0, $s0, end_print
+	  addi $v0, $zero, 1
+	  lw $a0, 0($s1)
+	  syscall
+	  addi $v0, $zero, 4
+	  la $a0, separador
+	  syscall
+	  addi $s1, $s1, 4
+	  addi $t0, $t0, 1
+	  j loop_print
+	end_print:
 	addi $v0, $zero, 17
 	syscall
 		
