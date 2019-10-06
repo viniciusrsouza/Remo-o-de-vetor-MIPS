@@ -71,7 +71,6 @@ remover_elemento:
 	syscall
 	add $s2, $v0, $zero	# armazena o valor que será excluído em $s2
 	addi $t4, $s0, 1	# carrega n+1 em $t4 para facilitar comparações
-	add $t3, $zero, $zero   # zera $t3 para usar como índice de acesso ao vetor
 	add $t2, $zero, $zero	# zera $t2 para usar no laço
 	loop_rem_1:
 	  beq $t2, $t4, end1	# $t2 == n+1
@@ -86,6 +85,19 @@ remover_elemento:
 	      slt $t7, $t7, $t5
 	      bnez $t7, else
 	      # for(int j = i; j<n; j++) v[j] = v[j+1];
+	      add $a1, $zero, $zero  # carrega $a1 para usar no laço
+	      sub $sp, $sp, 4	     # push $t0 para a stack
+	      sw $t0, 0($sp)
+	      loop_remover:
+	      	beq $a1, $s0, end_remover
+	        lw $t3, 4($t0)
+	        sw $t3, 0($t0)
+	        addi $t0, $t0, 4
+	        addi $a1, $a1, 1
+	        j loop_remover
+	      end_remover:
+	      lw $t0, 0($sp)	     # pop stack para $t0
+	      addi $sp, $sp, 4
 	      
 	    else:
 	    addi $t0, $t0, 4
